@@ -13,11 +13,13 @@ import androidx.compose.material3.Scaffold
 import androidx.lifecycle.ViewModel
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sharedflowdemo_lr8.ui.theme.SharedflowdemoLR8Theme
@@ -72,6 +74,13 @@ fun MainScreen(
     sharedFlow: SharedFlow<Int>
 ) {
     val messages = remember { mutableStateListOf<Int>() }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(key1 = Unit) {
+        sharedFlow.collect {
+            messages.add(it)
+        }
+    }
+
     LazyColumn(modifier = modifier) {
         items(messages) {
             Text(
