@@ -19,7 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sharedflowdemo_lr8.ui.theme.SharedflowdemoLR8Theme
@@ -56,6 +58,7 @@ class DemoViewModel : ViewModel() {
         viewModelScope.launch {
             for (i in 1..1000) {
                 delay(2000.milliseconds)
+                println("Emitting $i")
                 _sharedFlow.emit(i)
             }
         }
@@ -76,8 +79,11 @@ fun MainScreen(
     val messages = remember { mutableStateListOf<Int>() }
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(key1 = Unit) {
-        sharedFlow.collect {
-            messages.add(it)
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            sharedFlow.collect {
+                println("Collecting $it")
+                messages.add(it)
+            }
         }
     }
 
